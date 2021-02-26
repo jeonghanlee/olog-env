@@ -17,6 +17,7 @@ Configuration Environment for Olog-ES at <https://github.com/Olog/olog-es>.
 ```bash
 make init
 make build
+make run
 ```
 
 ## Docker Image

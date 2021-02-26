@@ -38,10 +38,10 @@ distclean:
 
 ## Build Source
 build: conf
-	$(QUIET) JAVA_HOME=$(JAVA_HOME) $(MAVEN_CMD) $(MVN_OPTS) -f $(OLOG_SRC_PATH) clean install -Dmaven.test.skip=true
+	$(QUIET) JAVA_HOME=$(JAVA_HOME) $(MAVEN_CMD) $(MVN_OPTS) -f $(OLOG_SRC_PATH) -Pdeployable-jar clean install -Dmaven.test.skip=true
 
 ## Copy the site specific files into sources
 conf: conf.ologproperties
 
 run: 
-	$(QUIET) JAVA_HOME=$(JAVA_HOME) $(MAVEN_CMD) org.springframework.boot:spring-boot-maven-plugin:run
+	$(QUIET) JAVA_HOME=$(JAVA_HOME) $(JAVA_CMD) -jar $(OLOG_SRC_PATH)/target/$(OLOG_JAR_FILENAME)

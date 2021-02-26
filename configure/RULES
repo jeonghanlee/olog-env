@@ -4,7 +4,6 @@ vpath %.local $(TOP)/configure
 vpath %.conf $(OLOG_SITE_TEMPLATE_PATH)
 vpath usergroup.* $(SITE_TEMPLATE_PATH)
 
-
 include $(TOP)/configure/RULES_FUNC
 include $(TOP)/configure/RULES_PATCH
 -include $(TOP)/configure/RULES_REQ
