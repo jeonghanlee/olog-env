@@ -1,16 +1,29 @@
 
 
+JAVA_HOME:=/usr/lib/jvm/java-11-openjdk-amd64
+MAVEN_HOME:=/usr/share/maven
 
-JAVA_PATH=/usr/bin
+JAVA_PATH:=$(JAVA_HOME)/bin
+MAVEN_PATH:=$(MAVEN_HOME)/bin
+
 
 ## Elasticsearch Server
-#ES_HOST:=localhost
-#ES_PORT:=9200
+ES_HOST:=localhost
+ES_PORT:=9200
 
+# Three options are avaiable, but this repo only support currently only http
+# so several rules and variables should be re-adjusted if one would like to use
+# other options (2,3)
+# Three options : (1) only http, (2) only https, and (3) https and http 
+# - applicaton.properties.in
+# - CONFIG_VARS : OLOG_URL, and OLOG_FULL_URL
+OLOG_PRTO:=http
+OLOG_HOST:=localhost
+OLOG_PORT:=8282
+OLOG_HTTPS_PORT:=8184
 
-#CF_PRTO:=http
-#CF_HOST:=localhost
-#CF_PORT:=8080
+MONGO_HOST:=localhost
+MONGO_PORT:=27017
 #
 #
 

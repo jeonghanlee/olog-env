@@ -1,43 +1,71 @@
-################## ChannelFinder Server ####################
-# ChannelFinder https port 
-server.port=8443
+# OLOG_HTTPS_PORT@  : configure/CONFIG_COMMON
+# OLOG_PORT@        : configure/CONFIG_COMMON
+# ES_HOST@          : configure/CONFIG_COMMON
+# ES_PORT@          : configure/CONFIG_COMMON
+# MONGO_HOST@       : configure/CONFIG_COMMON
+# MONGO_PORT@       : configure/CONFIG_COMMON
+# OLOG_SSHKEY@      : configure/CONFIG_OLOG
+# OLOG_SSHKEYALIAS@ : configure/CONFIG_OLOG
+# OLOG_LDIF@        : configure/CONFIG_OLOG 
+
+
+# the server port for the rest service
+server.port: @OLOG_HTTPS_PORT@
 
 # Options support for unsecure http
 server.http.enable=true
-server.http.port=8080
+server.http.port=@OLOG_PORT@
 
+# Disable the spring banner
+#spring.main.banner-mode=off
+
+# suppress the logging from spring boot 
+# during debugging this should be set to DEBUG
+logging.level.root=INFO
+logging.level.org.springframework=INFO
+logging.level.org.apache.catalina=INFO
+logging.level.org.apache.kafka=INFO
+logging.level.org.springframework.web=INFO
+logging.level.org.springframework.security=INFO
+
+spring.main.allow-bean-definition-overriding=true
+
+############## SSL - Configuration ##############
 server.ssl.key-store-type=PKCS12
-server.ssl.key-store=classpath:keystore/_KEYSTORE_
+server.ssl.key-store=classpath:keystore/@OLOG_SSHKEY@
 server.ssl.key-store-password=password
-server.ssl.key-alias=cf
+server.ssl.key-alias=@OLOG_SSHKEYALIAS@
 
 security.require-ssl=true
 
-logging.level.org.springframework.web=DEBUG
-
-logging.file=/var/log/ChannelFinder.log
-# Default
-# logging.file.max-size=10MB
-spring.http.log-request-details=true
-
 ############## LDAP - External ##############
 ldap.enabled = false
-#ldap.urls = ldaps://ldap.cs.nsls2.local/dc=nsls2,dc=bnl,dc=gov
-ldap.urls = ldaps://controlns02.nsls2.bnl.gov/dc=nsls2,dc=bnl,dc=gov
-ldap.base.dn = dc=nsls2,dc=bnl,dc=gov
-ldap.user.dn.pattern = uid={0},ou=People
+ldap.urls = ldaps://localhost/dc=als,dc=lbnl,dc=gov
+#ldap.urls = ldaps://controlns02.nsls2.bnl.gov/dc=als,dc=lbnl,dc=gov
+ldap.base.dn = dc=als,dc=lbnl,dc=gov
+ldap.user.search.base=
+# User search pattern, e.g. uid={0},ou=People. No default value as LDAP environment may not
+# support user search by pattern.
+ldap.user.dn.pattern=
+# User search filter, e.g. (&(objectClass=person)(SAMAccountName={0})). No default value as LDAP environment
+# may not support user search by filter.
+ldap.user.search.filter=
 ldap.groups.search.base = ou=Group
 ldap.groups.search.pattern = (memberUid= {1})
+# dn of manager account, may be required for group search
+ldap.manager.dn=
+# password of account
+ldap.manager.password=
 
 ############## LDAP - Embedded ##############
-embedded_ldap.enabled = true
-embedded_ldap.urls = ldap://localhost:8389/dc=cf,dc=local
-embedded_ldap.base.dn = dc=cf,dc=local
+embedded_ldap.enabled = false
+embedded_ldap.urls = ldap://localhost:8389/dc=olog,dc=local
+embedded_ldap.base.dn = dc=olog,dc=local
 embedded_ldap.user.dn.pattern = uid={0},ou=People
 embedded_ldap.groups.search.base = ou=Group
 embedded_ldap.groups.search.pattern = (memberUid= {1})
-spring.ldap.embedded.ldif=classpath:_CFLDIF_
-spring.ldap.embedded.base-dn=dc=cf,dc=local
+spring.ldap.embedded.ldif=classpath:@OLOG_LDIF@
+spring.ldap.embedded.base-dn=dc=olog,dc=local
 spring.ldap.embedded.port=8389 
 spring.ldap.embedded.validation.enabled=false
 
@@ -45,28 +73,82 @@ spring.ldap.embedded.validation.enabled=false
 ############## Demo Auth ##############
 demo_auth.enabled = false
 
-############## Role --> group Mapping ##############
+############## Authorization Role --> group Mapping ##############
 # Customize group names here
-admin-groups=cf-admins,sys-admins,ADMIN
-channel-groups=cf-channels,USER
-property-groups=cf-properties,USER
-tag-groups=cf-tags,USER
+admin-groups=olog-admins,sys-admins,ADMIN
+log-groups=olog-logs,USER
+tag-groups=olog-tags,USER
+property-groups=olog-properties,USER
+logbook-groups=olog-logbooks,USER
 
-############################## Elastic Network And HTTP ###############################
+############################## Elastic Search ###############################
 
-# Elasticsearch host
-#elasticsearch.network.host: 169.254.42.56
-# Set a custom port for the node to node communication (9300 by default):
-elasticsearch.transport.tcp.port: 9300
+# Elasticsearch, by default, binds itself to the 0.0.0.0 address, and listens
+# on port [9200-9300] for HTTP traffic and on port [9300-9400] for node-to-node
+# communication. (the range means that if the port is busy, it will automatically
+# try the next port).
+# Set both 'bind_host' and 'publish_host':
+#
+elasticsearch.network.host: @ES_HOST@
+
 # Set a custom port to listen for HTTP traffic:
-elasticsearch.http.port: 9200
+#
+elasticsearch.http.port: @ES_PORT@
 
-# Elasticsearch index names and types used by channelfinder, ensure that any changes here should be replicated in the mapping_definitions.sh
-elasticsearch.tag.index = cf_tags
-elasticsearch.tag.type = cf_tag
+# Set the name of the elastic cluster
+elasticsearch.cluster.name: elasticsearch
 
-elasticsearch.property.index = cf_properties
-elasticsearch.property.type = cf_property
+# The names of the index to use for olog
+elasticsearch.tag.index: olog_tags
+elasticsearch.tag.type: olog_tag
 
-elasticsearch.channel.index = channelfinder
-elasticsearch.channel.type = cf_channel
+elasticsearch.logbook.index: olog_logbooks
+elasticsearch.logbook.type: olog_logbook
+
+elasticsearch.property.index: olog_properties
+elasticsearch.property.type: olog_property
+
+elasticsearch.log.index: olog_logs
+elasticsearch.log.type: olog_log
+
+elasticsearch.sequence.index: olog_sequence
+elasticsearch.sequence.type: olog_sequence
+
+############################## Mongo gridfs client ###############################
+mongo.database:ologAttachments
+mongo.host:@MONGO_HOST@
+mongo.port:@MONGO_PORT@
+
+
+############################## Spring Session repository configuration ##############################
+
+# For debugging purposes, set the below to true
+# spring.h2.console.enabled=true
+
+# Sets the maximum inactive interval, MUST be in minutes. Defaults to 30 if not set here.
+# If set to a negative value, the session never expires.
+# spring.session.timeout=30
+
+# URL for the H2 database. Defaults to in-memory, which means sessions are lost between restarts.
+# Use the below example to define a file-based URL.
+# spring.datasource.url=jdbc:h2:file:./olog-session;DB_CLOSE_ON_EXIT=TRUE
+
+############################## CORS settings ##############################
+# Comma separated list of origins allowed to do CORS requests.
+# Defaults to http://localhost:3000 (NodeJS development), but must be augmented
+# with the origin(s) on which the web front-end is deployed.
+#cors.allowed.origins=http://localhost:3000
+
+################## File upload and request size limits ##################
+spring.servlet.multipart.max-file-size=50MB
+spring.servlet.multipart.max-request-size=100MB
+
+################## List of "levels" ##################
+levels=Urgent,Suggestion,Info,Request,Problem
+
+########### Elasticsearch "result set" sizes ##########
+# By default Elasticsearch will return 10 items matching a query.
+# This may bee too limiting, e.g. when client requests all tags.
+elasticsearch.result.size.logbooks=10
+elasticsearch.result.size.tags=10
+elasticsearch.result.size.properties=10

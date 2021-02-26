@@ -3,12 +3,23 @@
 .PHONY: sd_config sd_install sd_status sd_start sd_stop sd_restart sd_clean sd_enable sd_disable
 #
 #
+# @TARGET_NAME 
+# @DOCURL
+# @JAVAPATH
+# @JAVAOPTS
+# @TARGET_FILENAME
+# @OPTIONS
+# @USERID
+# @GROUPID
 sd_config:
 	$(QUIET)sed -e "s:@TARGET_NAME@:$(APPNAME):g" \
-		-e "s:@JAVA_PATH@:$(JAVA_PATH):g" \
+		-e "s|@DOCURL@|$(DOCURL)|g"       \
+		-e "s:@JAVAPATH@:$(JAVA_PATH):g" \
+		-e "s:@JAVAOPTS@:$(OLOG_JAVA_OPTS):g" \
+		
 		-e "s:@USERID@:$(USERID):g"      \
 		-e "s:@GROUPID@:$(GROUPID):g"    \
-		-e "s|@DOCURL@|$(DOCURL)|g"      \
+
 		-e "s:@INSTALL_LOCATION@:$(INSTALL_LOCATION):g" \
 		< $(SITE_TEMPLATE_PATH)/systemd.service.in > $(SITE_TEMPLATE_PATH)/$(SYSTEMD_FILENAME)
 #

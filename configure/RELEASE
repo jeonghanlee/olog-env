@@ -1,18 +1,18 @@
 
-APPNAME:=env-template
+APPNAME:=olog-es
 
 ## Where the Source repository SRC_URL/SRC_NAME
 ##
-SRC_URL:=https://github.com/jeonghanlee
-SRC_NAME:=${APPNAME}
+OLOG_SRC_URL:=https://github.com/Olog
+OLOG_SRC_NAME:=${APPNAME}
 
 
 ## Which the source tag / branch / hash id would like to use
 ## 2020-04-21
-SRC_TAG:=master
+OLOG_SRC_TAG:=master
 
 ## Placeholder for the site-specific version control 
-SRC_VERSION:=master
+OLOG_SRC_VERSION:=master
 
 
 -include $(TOP)/../RELEASE.local

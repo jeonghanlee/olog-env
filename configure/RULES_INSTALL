@@ -5,31 +5,31 @@
 install: src_install sd_install sd_enable
 
 src_install: src_version src_preinst
-	$(if $(wildcard $(INSTALL_LOCATION)), $(QUIET)$(SUDO) mv $(INSTALL_LOCATION) $(INSTALL_LOCATION)_backup_$$(date +%Y%m%d-%H%M%S))
-	$(QUIET)$(SUDO) install -d $(INSTALL_LOCATION)
-	$(QUIET)$(SUDO) $(INSTALL_DATA) -b $(SITE_TEMPLATE_PATH)/.versions  $(INSTALL_LOCATION)/
-	$(QUIET)$(SUDO) cp -rp $(SRC_PATH)/appserver/distributions/payara/target/stage/payara5/*  $(INSTALL_LOCATION)/
-	$(QUIET)$(SUDO)	chown -R $(USERID):$(GROUPID) $(INSTALL_LOCATION)
+	$(if $(wildcard $(OLOG_INSTALL_LOCATION)), $(QUIET)$(SUDO) mv $(OLOG_INSTALL_LOCATION) $(OLOG_INSTALL_LOCATION)_backup_$$(date +%Y%m%d-%H%M%S))
+	$(QUIET)$(SUDO) install -d $(OLOG_INSTALL_LOCATION)
+	$(QUIET)$(SUDO) $(INSTALL_DATA) -b $(SITE_TEMPLATE_PATH)/.versions  $(OLOG_INSTALL_LOCATION)/
+	$(QUIET)$(SUDO) cp -rp $(SRC_PATH)/appserver/distributions/payara/target/stage/payara5/*  $(OLOG_INSTALL_LOCATION)/
+	$(QUIET)$(SUDO)	chown -R $(USERID):$(GROUPID) $(OLOG_INSTALL_LOCATION)
 
 uninstall: sd_stop sd_disable sd_clean src_postrm
-	$(QUIET)echo "Removing $(INSTALL_LOCATION)..."
-	$(QUIET)$(SUDO) rm -rf $(INSTALL_LOCATION)/
+	$(QUIET)echo "Removing $(OLOG_INSTALL_LOCATION)..."
+	$(QUIET)$(SUDO) rm -rf $(OLOG_INSTALL_LOCATION)/
 
 
 .PHONY: src_version src_preinst src_postrm clean
 
 src_preinst:
-	$(QUIET)$(SUDO) bash $(SITE_TEMPLATE_PATH)/usergroup.postinst "configure" "$(USERID)" "$(GROUPID)"
+	$(QUIET)$(SUDO) bash $(SITE_TEMPLATE_PATH)/usergroup.postinst "configure" "$(OLOG_USERID)" "$(OLOG_GROUPID)"
 
 src_postrm: 
-	$(QUIET)$(SUDO) bash $(SITE_TEMPLATE_PATH)/usergroup.postrm "purge" "$(USERID)"
+	$(QUIET)$(SUDO) bash $(SITE_TEMPLATE_PATH)/usergroup.postrm "purge" "$(OLOG_USERID)"
 
 src_version: FORCE
 	$(QUIET)echo "Timestamps : $$(date +%Y%m%d-%H%M%S)/YYYYMMDD-HHMMSS" > $(SITE_TEMPLATE_PATH)/.versions
 	$(QUIET)echo "- SRC REMOTE URL   : $(SRC_GITURL)"  >> $(SITE_TEMPLATE_PATH)/.versions
 	$(QUIET)echo "- SRC SITE VERSION : $(SRC_TAG)"     >> $(SITE_TEMPLATE_PATH)/.versions
-	$(QUIET)echo -n "- SRC GIT  VERSION : "            >> $(SITE_TEMPLATE_PATH)/.versions
-	$(QUIET)cd $(SRC_PATH) && git describe --tags      >> $(SITE_TEMPLATE_PATH)/.versions
+	$(QUIET)echo "- SRC GIT  VERSION : "               >> $(SITE_TEMPLATE_PATH)/.versions
+	$(QUIET)-cd $(SRC_PATH) &&git describe --tags || echo "No name defined in this repo." >> $(SITE_TEMPLATE_PATH)/.versions
 
 clean:
 	rm -rf $(SITE_TEMPLATE_PATH)/.versions

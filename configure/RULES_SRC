@@ -27,24 +27,21 @@ default: help
 
 ## Clone Source
 init:
-	$(call gitclone,$(SRC_GITURL),$(SRC_PATH),$(SRC_TAG))
+	$(call gitclone,$(OLOG_SRC_GITURL),$(OLOG_SRC_PATH),$(OLOG_SRC_TAG))
 
 deinit: distclean
 ## Clean Source
 distclean:
-	$(call distclean, $(SRC_PATH))
+	$(call distclean, $(OLOG_SRC_PATH))
 
 .PHONY: build conf
 
 ## Build Source
-build:
-	echo "mvn $(MVN_OPTS) -f $(SRC_PATH) clean install -Dmaven.test.skip=true"
-	$(QUIET) mvn $(MVN_OPTS) -f $(SRC_PATH) clean install -Dmaven.test.skip=true
+build: conf
+	$(QUIET) JAVA_HOME=$(JAVA_HOME) $(MAVEN_CMD) $(MVN_OPTS) -f $(OLOG_SRC_PATH) clean install -Dmaven.test.skip=true
 
 ## Copy the site specific files into sources
-conf:
-	$(QUIET)sed -e "s:_KEYSTORE_:$(KEYSTORE_FILENAME):g" \
-		    -e "s:_CFLDIF_:$(CFLDIF_FILENAME):g" \
-		    < $(SITE_TEMPLATE_PATH)/application.properties.in \
-		    > $(SITE_TEMPLATE_PATH)/application.properties
-	$(QUIET)cp $(SITE_TEMPLATE_PATH)/application.properties $(SITE_SPECIFIC_FILES_PATH)/
+conf: conf.ologproperties
+
+run: 
+	$(QUIET) JAVA_HOME=$(JAVA_HOME) $(MAVEN_CMD) org.springframework.boot:spring-boot-maven-plugin:run

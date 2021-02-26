@@ -1,0 +1,40 @@
+# After changes
+#   sudo systemctl daemon-reload
+#
+# Start/status/stop
+#   sudo systemctl start  @TARGET_NAME@.service
+#   sudo systemctl status @TARGET_NAME@.service
+#   sudo systemctl stop   @TARGET_NAME@.service
+#
+# Start when computer boots:
+#   sudo systemctl enable @TARGET_NAME@.service
+#
+# @TARGET_NAME 
+# @DOCURL
+# @JAVAPATH
+# @JAVAOPTS
+# @TARGET_FILENAME
+# @OPTIONS
+# @USERID
+# @GROUPID
+# 
+[Unit]
+Description=@TARGET_NAME@ Service
+Documentation=@DOCURL@
+After=syslog.target network.target remote-fs.target  elasticsearch.service
+Requires=elasticsearch.service
+
+[Service]
+Type=simple
+ExecStart=@JAVAPATH@/java @JAVAOPTS@ -jar @TARGET_FILENAME@ \
+          @OPTIONS@
+
+User=@USERID@
+Group=@GROUPID@
+
+#StandardOutput=syslog
+#StandardError=syslog
+#SyslogIdentifier=@TARGET_NAME@
+
+[Install]
+WantedBy=multi-user.target
